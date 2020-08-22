@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="WebServers">
+    <option name="servers">
+      <webServer id="a02cce6a-9cf5-4327-8f8e-12e116fd3a58" name="1" url="http://google.com">
+        <fileTransfer rootFolder="/home/max/6.824/6.824-golabs-2020" accessType="SFTP" host="172.27.146.66" port="754" sshConfigId="77fc3d94-2716-4d10-9fe1-8b8ee84edff1" sshConfig="max@172.27.146.66:754 password">
+          <advancedOptions>
+            <advancedOptions dataProtectionLevel="Private" passiveMode="true" shareSSLContext="true" />
+          </advancedOptions>
+        </fileTransfer>
+      </webServer>
+    </option>
+  </component>
+</project>
