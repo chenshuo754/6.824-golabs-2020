@@ -24,6 +24,8 @@ type KeyValue struct {
 // Task number for each KeyValue emitted by Map.
 //
 func ihash(key string) int {
+	fmt.Fprint(os.Stderr, "master.go ihash\n")
+
 	h := fnv.New32a()
 	h.Write([]byte(key))
 	return int(h.Sum32() & 0x7fffffff)
@@ -31,6 +33,7 @@ func ihash(key string) int {
 
 func Worker(mapf func(string, string) []KeyValue,
 	reducef func(string, []string) string) {
+	fmt.Fprint(os.Stderr, "master.go Worker\n")
 
 	// Your worker implementation here.
 	w := worker{}
@@ -51,6 +54,8 @@ type worker struct {
 }
 
 func (w *worker) run() {
+	fmt.Fprint(os.Stderr, "master.go run\n")
+
 	// if reqTask conn fail, worker exit
 	for {
 		t := w.reqTask()
@@ -63,6 +68,8 @@ func (w *worker) run() {
 }
 
 func (w *worker) reqTask() Task {
+	fmt.Fprint(os.Stderr, "master.go reqTask\n")
+
 	args := TaskArgs{}
 	args.WorkerId = w.id
 	reply := TaskReply{}
@@ -76,6 +83,8 @@ func (w *worker) reqTask() Task {
 }
 
 func (w *worker) doTask(t Task) {
+	fmt.Fprint(os.Stderr, "master.go doTask\n")
+
 	DPrintf("in do Task")
 
 	switch t.Phase {
@@ -90,6 +99,8 @@ func (w *worker) doTask(t Task) {
 }
 
 func (w *worker) doMapTask(t Task) {
+	fmt.Fprint(os.Stderr, "master.go doMapTask\n")
+
 	contents, err := ioutil.ReadFile(t.FileName)
 	if err != nil {
 		w.reportTask(t, false, err)
@@ -126,6 +137,8 @@ func (w *worker) doMapTask(t Task) {
 }
 
 func (w *worker) doReduceTask(t Task) {
+	fmt.Fprint(os.Stderr, "master.go doReduceTask\n")
+
 	maps := make(map[string][]string)
 	for idx := 0; idx < t.NMaps; idx++ {
 		fileName := reduceName(idx, t.Seq)
@@ -160,6 +173,8 @@ func (w *worker) doReduceTask(t Task) {
 }
 
 func (w *worker) reportTask(t Task, done bool, err error) {
+	fmt.Fprint(os.Stderr, "master.go reportTask\n")
+
 	if err != nil {
 		log.Printf("%v", err)
 	}
@@ -175,6 +190,8 @@ func (w *worker) reportTask(t Task, done bool, err error) {
 }
 
 func (w *worker) register() {
+	fmt.Fprint(os.Stderr, "master.go register\n")
+
 	args := &RegisterArgs{}
 	reply := &RegisterReply{}
 	if ok := call("Master.RegWorker", args, reply); !ok {
@@ -189,6 +206,8 @@ func (w *worker) register() {
 // returns false if something goes wrong.
 //
 func call(rpcname string, args interface{}, reply interface{}) bool {
+	fmt.Fprint(os.Stderr, "master.go call\n")
+
 	// c, err := rpc.DialHTTP("tcp", "127.0.0.1"+":1234")
 	sockname := masterSock()
 	c, err := rpc.DialHTTP("unix", sockname)

@@ -15,6 +15,8 @@ import "os"
 import "fmt"
 
 func main() {
+	fmt.Fprint(os.Stderr, "mrmaster.go main\n")
+
 	if len(os.Args) < 2 {
 		fmt.Fprintf(os.Stderr, "Usage: mrmaster inputfiles...\n")
 		os.Exit(1)

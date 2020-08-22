@@ -1,6 +1,7 @@
 package mr
 
 import (
+	"fmt"
 	"log"
 	"net"
 	"net/http"
@@ -42,6 +43,8 @@ type Master struct {
 }
 
 func (m *Master) getTask(taskSeq int) Task {
+	fmt.Fprint(os.Stderr, "master.go getTask\n")
+
 	task := Task{
 		FileName: "",
 		NReduce:  m.nReduce,
@@ -58,6 +61,8 @@ func (m *Master) getTask(taskSeq int) Task {
 }
 
 func (m *Master) schedule() {
+	fmt.Fprint(os.Stderr, "master.go schedule\n")
+
 	m.mu.Lock()
 	defer m.mu.Unlock()
 
@@ -98,17 +103,23 @@ func (m *Master) schedule() {
 }
 
 func (m *Master) initMapTask() {
+	fmt.Fprint(os.Stderr, "master.go initMapTask\n")
+
 	m.taskPhase = MapPhase
 	m.taskStats = make([]TaskStat, len(m.files))
 }
 
 func (m *Master) initReduceTask() {
+	fmt.Fprint(os.Stderr, "master.go initReduceTask\n")
+
 	DPrintf("init ReduceTask")
 	m.taskPhase = ReducePhase
 	m.taskStats = make([]TaskStat, m.nReduce)
 }
 
 func (m *Master) regTask(args *TaskArgs, task *Task) {
+	fmt.Fprint(os.Stderr, "master.go regTask\n")
+
 	m.mu.Lock()
 	defer m.mu.Unlock()
 
@@ -123,6 +134,8 @@ func (m *Master) regTask(args *TaskArgs, task *Task) {
 
 // Your code here -- RPC handlers for the worker to call.
 func (m *Master) GetOneTask(args *TaskArgs, reply *TaskReply) error {
+	fmt.Fprint(os.Stderr, "master.go GetOneTask\n")
+
 	task := <-m.taskCh
 	reply.Task = &task
 
@@ -134,6 +147,8 @@ func (m *Master) GetOneTask(args *TaskArgs, reply *TaskReply) error {
 }
 
 func (m *Master) ReportTask(args *ReportTaskArgs, reply *ReportTaskReply) error {
+	fmt.Fprint(os.Stderr, "master.go ReportTask\n")
+
 	m.mu.Lock()
 	defer m.mu.Unlock()
 
@@ -154,6 +169,8 @@ func (m *Master) ReportTask(args *ReportTaskArgs, reply *ReportTaskReply) error 
 }
 
 func (m *Master) RegWorker(args *RegisterArgs, reply *RegisterReply) error {
+	fmt.Fprint(os.Stderr, "master.go RegWorker\n")
+
 	m.mu.Lock()
 	defer m.mu.Unlock()
 	m.workerSeq += 1
@@ -165,6 +182,8 @@ func (m *Master) RegWorker(args *RegisterArgs, reply *RegisterReply) error {
 // start a thread that listens for RPCs from worker.go
 //
 func (m *Master) server() {
+	fmt.Fprint(os.Stderr, "master.go server\n")
+
 	rpc.Register(m)
 	rpc.HandleHTTP()
 	//l, e := net.Listen("tcp", ":1234")
@@ -182,13 +201,16 @@ func (m *Master) server() {
 // if the entire job has finished.
 //
 func (m *Master) Done() bool {
+	fmt.Fprint(os.Stderr, "master.go Done\n")
+
 	m.mu.Lock()
 	defer m.mu.Unlock()
 	return m.done
 }
 
 func (m *Master) tickSchedule() {
-	// 按说应该是每个 task 一个 timer，此处简单处理
+	fmt.Fprint(os.Stderr, "master.go tickSchedule\n")
+
 	for !m.Done() {
 		go m.schedule()
 		time.Sleep(ScheduleInterval)
@@ -199,6 +221,8 @@ func (m *Master) tickSchedule() {
 // create a Master.
 //
 func MakeMaster(files []string, nReduce int) *Master {
+	fmt.Fprint(os.Stderr, "master.go MakeMaster\n")
+
 	m := Master{}
 	m.mu = sync.Mutex{}
 	m.nReduce = nReduce

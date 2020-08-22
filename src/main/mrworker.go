@@ -17,6 +17,8 @@ import "fmt"
 import "log"
 
 func main() {
+	fmt.Fprintf(os.Stderr, "mrworker.go main\n")
+
 	if len(os.Args) != 2 {
 		fmt.Fprintf(os.Stderr, "Usage: mrworker xxx.so\n")
 		os.Exit(1)
